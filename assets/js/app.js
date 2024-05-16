@@ -25,31 +25,30 @@ spotLight.target.position.set(0, 0, 0);
 scene.add(spotLight);
 scene.add(spotLight.target);
 
-let mouseX = 0;
-let mouseY = 0;
-let isMouseOverCanvas = false;
-
-const centerX = window.innerWidth / 2;
-const centerY = window.innerHeight / 2;
+let initialMouseX = 0;
+let initialMouseY = 0;
+let isMouseDown = false;
 
 function onMouseMove(event) {
-    if (isMouseOverCanvas) {
-        mouseX = (event.clientX - centerX) / centerX;
-        mouseY = (event.clientY - centerY) / centerY;
+    if (isMouseDown) {
+        mouseX = (event.clientX - initialMouseX) / window.innerWidth;
+        mouseY = (event.clientY - initialMouseY) / window.innerHeight;
     }
 }
 
-function onMouseEnter() {
-    isMouseOverCanvas = true;
+function onMouseDown(event) {
+    isMouseDown = true;
+    initialMouseX = event.clientX;
+    initialMouseY = event.clientY;
 }
 
-function onMouseLeave() {
-    isMouseOverCanvas = false;
+function onMouseUp() {
+    isMouseDown = false;
 }
 
 renderer.domElement.addEventListener('mousemove', onMouseMove, false);
-renderer.domElement.addEventListener('mouseenter', onMouseEnter, false);
-renderer.domElement.addEventListener('mouseleave', onMouseLeave, false);
+renderer.domElement.addEventListener('mousedown', onMouseDown, false);
+renderer.domElement.addEventListener('mouseup', onMouseUp, false);
 
 const loader = new THREE.GLTFLoader();
 loader.load('assets/models/town/scene.gltf', function (gltf) {
@@ -63,7 +62,7 @@ let pitch = 0;
 function animate() {
     requestAnimationFrame(animate);
 
-    if (isMouseOverCanvas) {
+    if (isMouseDown) {
         // Adjust these values to change sensitivity
         const sensitivity = 0.05;
         yaw -= mouseX * sensitivity;
