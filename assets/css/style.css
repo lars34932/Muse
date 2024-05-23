@@ -16,7 +16,8 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    background: linear-gradient(to top, #b3daff, #e6f7ff);
+    background: #041838;
+    color: #eddfbb;
 }
 
 .main__animation {
@@ -54,7 +55,7 @@ body {
     justify-content: flex-start;
     font-size: 2rem;
     text-decoration: none;
-    color: black;
+    color: #eddfbb;
     font-weight: 600;
 }
 
