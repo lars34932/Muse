@@ -8,7 +8,28 @@
 
 html {
     font-size: 62.5%;
-    font-family: sans-serif;
+}
+
+body {
+    font-family: "IM Fell English", serif;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: linear-gradient(to top, #b3daff, #e6f7ff);
+}
+
+.main__animation {
+    height: 50rem;
+    background: linear-gradient(to top, #b3daff, #e6f7ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.animation {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .header {
@@ -17,7 +38,6 @@ html {
     justify-content: space-between;
     padding: 2rem;
     gap: 2rem;
-    background: #EEEEEE;
 }
 
 .header__div {
@@ -54,10 +74,6 @@ html {
 .header__div3 {
     display: flex;
     justify-content: flex-end;
-}
-
-.main__animation {
-    height: 50rem;
 }
 
 .footer {
