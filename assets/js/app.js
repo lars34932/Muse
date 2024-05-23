@@ -1,9 +1,11 @@
+const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+const camera = new THREE.PerspectiveCamera(75, mainSection.clientWidth / mainSection.clientHeight, 0.1, 100);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.domElement.className = 'animation';
+renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 renderer.setClearColor(0xffffff);
-document.body.appendChild(renderer.domElement);
+mainSection.appendChild(renderer.domElement);
 
 const vertexShader = `
     varying vec3 vPosition;
@@ -67,14 +69,14 @@ scene.add(cubeEdges);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-camera.position.z = 15;
+camera.position.z = 13;
 
 const loader = new THREE.GLTFLoader();
 let boat;
 loader.load('assets/models/ship/scene.gltf', function (gltf) {
     boat = gltf.scene;
     boat.scale.set(0.17, 0.17, 0.17);
-    boat.position.set(-4.5, 0, 4.5);
+    boat.position.set(-4.5, 0, 5);
     scene.add(boat);
     console.log('Boat loaded successfully', boat);
 }, undefined, function (error) {
@@ -145,4 +147,11 @@ function resetBoatPosition() {
     boat.rotation.set(0, 0, 0);
     cube.rotation.y = 0;
     cubeEdges.rotation.y = 0;
+}
+
+window.addEventListener('resize', onWindowResize, false);
+function onWindowResize() {
+    camera.aspect = mainSection.clientWidth / mainSection.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 }

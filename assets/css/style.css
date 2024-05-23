@@ -11,27 +11,57 @@ html{
 
 .header{
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    padding: 2rem;
+    gap: 2rem;
+    background: #EEEEEE;
 }
 
 .header__div{
+    width: 33.33%;
+}
+
+.header__div1{
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
+}
+
+.header__link{
+    display: flex;
+    justify-content: flex-start;
+    font-size: 2rem;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+}
+
+.header__link:hover{
+    text-decoration: underline;
+}
+
+.header__div2{
+    display: flex;
+    justify-content: space-around;
 }
 
 .header__title{
     font-size: 4rem;
 }
 
-.header__div2{
+.header__div3{
     display: flex;
-    gap: 4rem;
+    justify-content: flex-end;
 }
 
-.header__link{
-    font-size: 3rem;
-    text-decoration: none;
-    color: black;
+.main{
+    padding: 2rem;
+}
+
+.main__animation{
+    height: 50rem;
+}
+
+.footer{
+    padding: 2rem;
 }
