@@ -1,36 +1,42 @@
-*, *::before, *::after{
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html{
+html {
     font-size: 62.5%;
-    font-family: sans-serif;
+    font-family: "IM Fell English", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
-.header{
+
+
+.header {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.header__div{
+.header__div {
     display: flex;
     gap: 1rem;
 }
 
-.header__title{
+.header__title {
     font-size: 4rem;
 }
 
-.header__div2{
+.header__div2 {
     display: flex;
     gap: 4rem;
 }
 
-.header__link{
+.header__link {
     font-size: 3rem;
     text-decoration: none;
     color: black;
