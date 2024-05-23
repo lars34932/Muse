@@ -27,7 +27,7 @@ const fragmentShader = `
     void main() {
         float wave1 = sin(worldPosition.x * 1.5 + time * 0.5) * 0.5;
         float wave2 = sin(worldPosition.x * 2.0 - time * 0.3) * 0.35;
-        
+
         vec3 darkBlue = vec3(0.0, 0.2, 0.5);
         vec3 darkGreen = vec3(0.0, 0.4, 0.2); 
         vec3 lightBlue = vec3(0.2, 0.4, 0.7);
@@ -61,6 +61,7 @@ const material = new THREE.ShaderMaterial({
 
 const cube = new THREE.Mesh(new THREE.BoxGeometry(9, 9, 9), material);
 scene.add(cube);
+
 const edges = new THREE.EdgesGeometry(cube.geometry);
 const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 const cubeEdges = new THREE.LineSegments(edges, edgeMaterial);
@@ -73,13 +74,13 @@ camera.position.z = 13;
 
 const loader = new THREE.GLTFLoader();
 let boat;
-loader.load('assets/models/ship/scene.gltf', function (gltf) {
+loader.load('assets/models/ship/scene.gltf', (gltf) => {
     boat = gltf.scene;
     boat.scale.set(0.25, 0.25, 0.25);
     boat.position.set(-4.5, 0, 5);
     scene.add(boat);
     console.log('Boat loaded successfully', boat);
-}, undefined, function (error) {
+}, undefined, (error) => {
     console.error('An error happened', error);
 });
 
@@ -92,49 +93,54 @@ let initialBoatPosition = new THREE.Vector3();
 
 function animate() {
     requestAnimationFrame(animate);
-
     material.uniforms.time.value += 0.02;
 
     if (boat && !rotating) {
-        const time = material.uniforms.time.value;
-        const wave1 = Math.sin(boat.position.x * 1.5 + time * 0.5) * 0.2;
-        const wave2 = Math.sin(boat.position.x * 2.0 - time * 0.3) * 0.14 - 0.04;
-        boat.position.y = wave1 + wave2;
-        boat.rotation.z = Math.sin(time * 0.5) * 0.05;
-        boat.rotation.x = Math.cos(time * 0.3) * 0.05;
-
-        boat.position.x += boatSpeed;
-        if (boat.position.x >= 4.5) {
-            boat.position.x = 4.5;
-            startRotation();
-        }
+        animateBoat();
     }
 
     if (rotating) {
-        rotationProgress += 1;
-        const rotationFraction = rotationProgress / rotationDuration;
-        const currentRotationAngle = rotationFraction * rotationAngle;
-
-        cube.rotation.y = currentRotationAngle;
-        cubeEdges.rotation.y = currentRotationAngle;
-
-        const cosAngle = Math.cos(currentRotationAngle);
-        const sinAngle = Math.sin(currentRotationAngle);
-        const newX = initialBoatPosition.x * cosAngle + initialBoatPosition.z * sinAngle;
-        const newZ = -initialBoatPosition.x * sinAngle + initialBoatPosition.z * cosAngle;
-        boat.position.set(newX, boat.position.y, newZ);
-
-        if (rotationProgress >= rotationDuration) {
-            rotating = false;
-            cube.rotation.y = 0;
-            cubeEdges.rotation.y = 0;
-            resetBoatPosition();
-        }
+        rotateScene();
     }
 
     renderer.render(scene, camera);
 }
 animate();
+
+function animateBoat() {
+    const time = material.uniforms.time.value;
+    const wave1 = Math.sin(boat.position.x * 1.5 + time * 0.5) * 0.2;
+    const wave2 = Math.sin(boat.position.x * 2.0 - time * 0.3) * 0.14 - 0.04;
+    boat.position.y = wave1 + wave2;
+    boat.rotation.z = Math.sin(time * 0.5) * 0.05;
+    boat.rotation.x = Math.cos(time * 0.3) * 0.05;
+
+    boat.position.x += boatSpeed;
+    if (boat.position.x >= 4.5) {
+        boat.position.x = 4.5;
+        startRotation();
+    }
+}
+
+function rotateScene() {
+    rotationProgress += 1;
+    const rotationFraction = rotationProgress / rotationDuration;
+    const currentRotationAngle = rotationFraction * rotationAngle;
+
+    cube.rotation.y = currentRotationAngle;
+    cubeEdges.rotation.y = currentRotationAngle;
+
+    const cosAngle = Math.cos(currentRotationAngle);
+    const sinAngle = Math.sin(currentRotationAngle);
+    const newX = initialBoatPosition.x * cosAngle + initialBoatPosition.z * sinAngle;
+    const newZ = -initialBoatPosition.x * sinAngle + initialBoatPosition.z * cosAngle;
+    boat.position.set(newX, boat.position.y, newZ);
+
+    if (rotationProgress >= rotationDuration) {
+        rotating = false;
+        resetBoatPosition();
+    }
+}
 
 function startRotation() {
     rotating = true;
@@ -156,22 +162,21 @@ function onWindowResize() {
     renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 }
 
-// Add Suns on all sides of the cube
-const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI); // A circle with the top half removed
-const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, side: THREE.DoubleSide }); // Ensure sun is visible from both sides
+const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI);
+const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, side: THREE.DoubleSide });
 
 const sunPositions = [
-    [0, 4.49, 4.51],  // Front
-    [0, 4.49, -4.51], // Back
-    [4.51, 4.49, 0],  // Right
-    [-4.51, 4.49, 0]  // Left
+    [0, 4.49, 4.51],  
+    [0, 4.49, -4.51],
+    [4.51, 4.49, 0],  
+    [-4.51, 4.49, 0]  
 ];
 
 const sunRotations = [
-    [0, 0, 0],            // Front
-    [0, Math.PI, 0],      // Back
-    [0, -Math.PI / 2, 0], // Right
-    [0, Math.PI / 2, 0]   // Left
+    [0, 0, 0],
+    [0, Math.PI, 0],
+    [0, -Math.PI / 2, 0],
+    [0, Math.PI / 2, 0]
 ];
 
 sunPositions.forEach((position, index) => {
