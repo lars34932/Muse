@@ -1,15 +1,17 @@
-*, *::before, *::after{
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html{
+html {
     font-size: 62.5%;
     font-family: sans-serif;
 }
 
-.header{
+.header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -18,16 +20,16 @@ html{
     background: #EEEEEE;
 }
 
-.header__div{
+.header__div {
     width: 33.33%;
 }
 
-.header__div1{
+.header__div1 {
     display: flex;
     gap: 2rem;
 }
 
-.header__link{
+.header__link {
     display: flex;
     justify-content: flex-start;
     font-size: 2rem;
@@ -36,31 +38,28 @@ html{
     font-weight: 600;
 }
 
-.header__link:hover{
+.header__link:hover {
     text-decoration: underline;
 }
 
-.header__div2{
+.header__div2 {
     display: flex;
     justify-content: space-around;
 }
 
-.header__title{
+.header__title {
     font-size: 4rem;
 }
 
-.header__div3{
+.header__div3 {
     display: flex;
     justify-content: flex-end;
 }
 
-.main{
-}
-
-.main__animation{
+.main__animation {
     height: 50rem;
 }
 
-.footer{
+.footer {
     padding: 2rem;
 }
