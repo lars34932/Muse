@@ -38,7 +38,7 @@ const fragmentShader = `
     void main() {
         float wave1 = sin(worldPosition.x * 1.5 + time * 0.5) * 0.5;
         float wave2 = sin(worldPosition.x * 2.0 - time * 0.3) * 0.35;
-        
+
         vec3 darkBlue = vec3(0.0, 0.2, 0.5);
         vec3 darkGreen = vec3(0.0, 0.4, 0.2); 
         vec3 lightBlue = vec3(0.2, 0.4, 0.7);
@@ -72,6 +72,7 @@ const material = new THREE.ShaderMaterial({
 
 const cube = new THREE.Mesh(new THREE.BoxGeometry(9, 9, 9), material);
 scene.add(cube);
+
 const edges = new THREE.EdgesGeometry(cube.geometry);
 const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 const cubeEdges = new THREE.LineSegments(edges, edgeMaterial);
