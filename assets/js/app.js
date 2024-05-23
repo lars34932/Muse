@@ -4,7 +4,7 @@ const camera = new THREE.PerspectiveCamera(75, mainSection.clientWidth / mainSec
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.domElement.className = 'animation';
 renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
-renderer.setClearColor(0xffffff);
+renderer.setClearColor(0xE5CB9F);
 mainSection.appendChild(renderer.domElement);
 
 const vertexShader = `
@@ -75,7 +75,7 @@ const loader = new THREE.GLTFLoader();
 let boat;
 loader.load('assets/models/ship/scene.gltf', function (gltf) {
     boat = gltf.scene;
-    boat.scale.set(0.17, 0.17, 0.17);
+    boat.scale.set(0.25, 0.25, 0.25);
     boat.position.set(-4.5, 0, 5);
     scene.add(boat);
     console.log('Boat loaded successfully', boat);
@@ -83,10 +83,10 @@ loader.load('assets/models/ship/scene.gltf', function (gltf) {
     console.error('An error happened', error);
 });
 
-let boatSpeed = 0.02;
+let boatSpeed = 0.01;
 let rotating = false;
 let rotationProgress = 0;
-const rotationDuration = 200;
+const rotationDuration = 300;
 const rotationAngle = -Math.PI / 2;
 let initialBoatPosition = new THREE.Vector3();
 
@@ -155,3 +155,42 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 }
+
+// Add Sun as a flat circle with the top half removed
+const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI); // A circle with the top half removed
+const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500 });
+const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+sun.position.set(0, 4.5, 4.51);
+cube.add(sun);
+
+// Function to create sun rays with variable width pointing to the bottom 50% and transparent
+function createSunRay() {
+    const length = Math.random() * 5 + 2;
+    const angle = Math.random() * Math.PI - Math.PI; // Angle restricted to bottom 50%
+    const x = Math.cos(angle) * length;
+    const y = Math.sin(angle) * length;
+    const width = Math.random() * 0.2 + 0.05; // Random width between 0.05 and 0.25
+
+    const rayGeometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([
+        -width / 2, 0, 0,
+        width / 2, 0, 0,
+        width / 2, y, 0,
+        -width / 2, y, 0,
+    ]);
+    rayGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    rayGeometry.setIndex([0, 1, 2, 2, 3, 0]); // Indices to draw two triangles to form a rectangle
+
+    const rayMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, transparent: true, opacity: 0.6 }); // Semi-transparent rays
+    const ray = new THREE.Mesh(rayGeometry, rayMaterial);
+    ray.position.copy(sun.position);
+
+    cube.add(ray);
+
+    setTimeout(() => {
+        cube.remove(ray);
+    }, 1000); // Remove the ray after 1 second
+}
+
+// Spawn sun rays periodically
+setInterval(createSunRay, 2000);
