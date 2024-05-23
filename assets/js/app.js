@@ -1,22 +1,11 @@
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  mainSection.clientWidth / mainSection.clientHeight,
-  0.1,
-  100
-);
+const camera = new THREE.PerspectiveCamera(75, mainSection.clientWidth / mainSection.clientHeight, 0.1, 100);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.domElement.className = "animation";
+renderer.domElement.className = 'animation';
 renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
+renderer.setClearColor(0xE5CB9F);
 mainSection.appendChild(renderer.domElement);
-
-// Load the background texture
-const loader2 = new THREE.TextureLoader();
-loader2.load("assets/img/wampum.webp", function (texture) {
-  texture.minFilter = THREE.LinearFilter; // Ensure smoother scaling
-  scene.background = texture;
-});
 
 const vertexShader = `
     varying vec3 vPosition;
@@ -63,11 +52,11 @@ const fragmentShader = `
 `;
 
 const material = new THREE.ShaderMaterial({
-  vertexShader,
-  fragmentShader,
-  uniforms: {
-    time: { value: 0 },
-  },
+    vertexShader,
+    fragmentShader,
+    uniforms: {
+        time: { value: 0 }
+    }
 });
 
 const cube = new THREE.Mesh(new THREE.BoxGeometry(9, 9, 9), material);
@@ -85,20 +74,15 @@ camera.position.z = 13;
 
 const loader = new THREE.GLTFLoader();
 let boat;
-loader.load(
-  "assets/models/ship/scene.gltf",
-  function (gltf) {
+loader.load('assets/models/ship/scene.gltf', (gltf) => {
     boat = gltf.scene;
     boat.scale.set(0.25, 0.25, 0.25);
     boat.position.set(-4.5, 0, 5);
     scene.add(boat);
-    console.log("Boat loaded successfully", boat);
-  },
-  undefined,
-  function (error) {
-    console.error("An error happened", error);
-  }
-);
+    console.log('Boat loaded successfully', boat);
+}, undefined, (error) => {
+    console.error('An error happened', error);
+});
 
 let boatSpeed = 0.01;
 let rotating = false;
@@ -108,11 +92,22 @@ const rotationAngle = -Math.PI / 2;
 let initialBoatPosition = new THREE.Vector3();
 
 function animate() {
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
+    material.uniforms.time.value += 0.02;
 
-  material.uniforms.time.value += 0.02;
+    if (boat && !rotating) {
+        animateBoat();
+    }
 
-  if (boat && !rotating) {
+    if (rotating) {
+        rotateScene();
+    }
+
+    renderer.render(scene, camera);
+}
+animate();
+
+function animateBoat() {
     const time = material.uniforms.time.value;
     const wave1 = Math.sin(boat.position.x * 1.5 + time * 0.5) * 0.2;
     const wave2 = Math.sin(boat.position.x * 2.0 - time * 0.3) * 0.14 - 0.04;
@@ -122,12 +117,12 @@ function animate() {
 
     boat.position.x += boatSpeed;
     if (boat.position.x >= 4.5) {
-      boat.position.x = 4.5;
-      startRotation();
+        boat.position.x = 4.5;
+        startRotation();
     }
-  }
+}
 
-  if (rotating) {
+function rotateScene() {
     rotationProgress += 1;
     const rotationFraction = rotationProgress / rotationDuration;
     const currentRotationAngle = rotationFraction * rotationAngle;
@@ -137,91 +132,56 @@ function animate() {
 
     const cosAngle = Math.cos(currentRotationAngle);
     const sinAngle = Math.sin(currentRotationAngle);
-    const newX =
-      initialBoatPosition.x * cosAngle + initialBoatPosition.z * sinAngle;
-    const newZ =
-      -initialBoatPosition.x * sinAngle + initialBoatPosition.z * cosAngle;
+    const newX = initialBoatPosition.x * cosAngle + initialBoatPosition.z * sinAngle;
+    const newZ = -initialBoatPosition.x * sinAngle + initialBoatPosition.z * cosAngle;
     boat.position.set(newX, boat.position.y, newZ);
 
     if (rotationProgress >= rotationDuration) {
-      rotating = false;
-      cube.rotation.y = 0;
-      cubeEdges.rotation.y = 0;
-      resetBoatPosition();
+        rotating = false;
+        resetBoatPosition();
     }
-  }
-
-  renderer.render(scene, camera);
 }
-animate();
 
 function startRotation() {
-  rotating = true;
-  rotationProgress = 0;
-  initialBoatPosition.copy(boat.position);
+    rotating = true;
+    rotationProgress = 0;
+    initialBoatPosition.copy(boat.position);
 }
 
 function resetBoatPosition() {
-  boat.position.set(-4.5, 0, 4.5);
-  boat.rotation.set(0, 0, 0);
-  cube.rotation.y = 0;
-  cubeEdges.rotation.y = 0;
+    boat.position.set(-4.5, 0, 4.5);
+    boat.rotation.set(0, 0, 0);
+    cube.rotation.y = 0;
+    cubeEdges.rotation.y = 0;
 }
 
-window.addEventListener("resize", onWindowResize, false);
+window.addEventListener('resize', onWindowResize, false);
 function onWindowResize() {
-  camera.aspect = mainSection.clientWidth / mainSection.clientHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
+    camera.aspect = mainSection.clientWidth / mainSection.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 }
 
-// Add Sun as a flat circle with the top half removed
-const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI); // A circle with the top half removed
-const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
-const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-sun.position.set(0, 4.5, 4.51);
-cube.add(sun);
+const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI);
+const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, side: THREE.DoubleSide });
 
-// Function to create sun rays with variable width pointing to the bottom 50% and transparent
-function createSunRay() {
-  const length = Math.random() * 5 + 2;
-  const angle = Math.random() * Math.PI - Math.PI; // Angle restricted to bottom 50%
-  const x = Math.cos(angle) * length;
-  const y = Math.sin(angle) * length;
-  const width = Math.random() * 0.2 + 0.05; // Random width between 0.05 and 0.25
+const sunPositions = [
+    [0, 4.49, 4.51],  
+    [0, 4.49, -4.51],
+    [4.51, 4.49, 0],  
+    [-4.51, 4.49, 0]  
+];
 
-  const rayGeometry = new THREE.BufferGeometry();
-  const vertices = new Float32Array([
-    -width / 2,
-    0,
-    0,
-    width / 2,
-    0,
-    0,
-    width / 2,
-    y,
-    0,
-    -width / 2,
-    y,
-    0,
-  ]);
-  rayGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-  rayGeometry.setIndex([0, 1, 2, 2, 3, 0]); // Indices to draw two triangles to form a rectangle
+const sunRotations = [
+    [0, 0, 0],
+    [0, Math.PI, 0],
+    [0, -Math.PI / 2, 0],
+    [0, Math.PI / 2, 0]
+];
 
-  const rayMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffa500,
-    transparent: true,
-    opacity: 0.6,
-  }); // Semi-transparent rays
-  const ray = new THREE.Mesh(rayGeometry, rayMaterial);
-  ray.position.copy(sun.position);
-
-  cube.add(ray);
-
-  setTimeout(() => {
-    cube.remove(ray);
-  }, 1000); // Remove the ray after 1 second
-}
-
-// Spawn sun rays periodically
-setInterval(createSunRay, 2000);
+sunPositions.forEach((position, index) => {
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    sun.position.set(...position);
+    sun.rotation.set(...sunRotations[index]);
+    cube.add(sun);
+});

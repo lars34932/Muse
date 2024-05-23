@@ -16,8 +16,8 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
-    background: #041838;
-    color: #eddfbb;
+    background: #02122e;
+    color: #f3eddf;
 }
 
 .main__animation {
@@ -55,7 +55,7 @@ body {
     justify-content: flex-start;
     font-size: 2rem;
     text-decoration: none;
-    color: #eddfbb;
+    color: #f3eddf;
     font-weight: 600;
 }
 
