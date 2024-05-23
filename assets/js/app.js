@@ -156,41 +156,27 @@ function onWindowResize() {
     renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 }
 
-// Add Sun as a flat circle with the top half removed
+// Add Suns on all sides of the cube
 const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI); // A circle with the top half removed
-const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500 });
-const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-sun.position.set(0, 4.5, 4.51);
-cube.add(sun);
+const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, side: THREE.DoubleSide }); // Ensure sun is visible from both sides
 
-// Function to create sun rays with variable width pointing to the bottom 50% and transparent
-function createSunRay() {
-    const length = Math.random() * 5 + 2;
-    const angle = Math.random() * Math.PI - Math.PI; // Angle restricted to bottom 50%
-    const x = Math.cos(angle) * length;
-    const y = Math.sin(angle) * length;
-    const width = Math.random() * 0.2 + 0.05; // Random width between 0.05 and 0.25
+const sunPositions = [
+    [0, 4.49, 4.51],  // Front
+    [0, 4.49, -4.51], // Back
+    [4.51, 4.49, 0],  // Right
+    [-4.51, 4.49, 0]  // Left
+];
 
-    const rayGeometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-        -width / 2, 0, 0,
-        width / 2, 0, 0,
-        width / 2, y, 0,
-        -width / 2, y, 0,
-    ]);
-    rayGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    rayGeometry.setIndex([0, 1, 2, 2, 3, 0]); // Indices to draw two triangles to form a rectangle
+const sunRotations = [
+    [0, 0, 0],            // Front
+    [0, Math.PI, 0],      // Back
+    [0, -Math.PI / 2, 0], // Right
+    [0, Math.PI / 2, 0]   // Left
+];
 
-    const rayMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, transparent: true, opacity: 0.6 }); // Semi-transparent rays
-    const ray = new THREE.Mesh(rayGeometry, rayMaterial);
-    ray.position.copy(sun.position);
-
-    cube.add(ray);
-
-    setTimeout(() => {
-        cube.remove(ray);
-    }, 1000); // Remove the ray after 1 second
-}
-
-// Spawn sun rays periodically
-setInterval(createSunRay, 2000);
+sunPositions.forEach((position, index) => {
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    sun.position.set(...position);
+    sun.rotation.set(...sunRotations[index]);
+    cube.add(sun);
+});
