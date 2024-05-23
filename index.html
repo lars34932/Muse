@@ -4,28 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="assets/js/app.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
     <link rel="stylesheet" href="assets/css/style.css" />
-    <title>Wampum</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap"
-      rel="stylesheet"
-    />
+    <title>Document</title>
   </head>
-  <body>
+  <body class="body">
     <header class="header">
-      <div class="header__div">
-        <h1 class="header__title">wampum</h1>
+      <div class="header__div header__div1">
+        <a href="" class="header__link">Animatie</a>
+        <a href="view.html" class="header__link">3D Wereld</a>
+        <a
+          href="https://www.amsterdammuseum.nl/tentoonstelling/manahahtaanung-of-nieuw-amsterdam/89642"
+          class="header__link"
+          >Tentoonstelling</a
+        >
       </div>
-      <div class="header__div2">
-        <a href="" class="header__link">animatie</a>
-        <a href="" class="header__link">3d wereld</a>
-        <a href="" class="header__link">tentoonstelling</a>
+      <div class="header__div header__div2">
+        <h1 class="header__title">Wampum</h1>
+      </div>
+      <div class="header__div header__div3">
+        <a href="index.html" class="header__link">Home</a>
       </div>
     </header>
-    <main class="main"></main>
-    <footer class="footer"></footer>
+    <main class="main">
+      <section class="main__animation">
+        <script src="assets/js/app.js"></script>
+      </section>
+      <section class="main__info">
+        <h2>Info</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam quae
+          maxime recusandae itaque. At unde cumque, animi, accusamus nobis quasi
+          et delectus voluptatum praesentium obcaecati modi in magni id optio.
+        </p>
+      </section>
+      <section class="main__video"></section>
+      <section class="main__world"></section>
+    </main>
+    <footer class="footer">
+      <p>footer</p>
+    </footer>
   </body>
 </html>
