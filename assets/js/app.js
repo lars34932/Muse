@@ -1,159 +1,54 @@
+//THREE settings
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, mainSection.clientWidth / mainSection.clientHeight, 0.1, 100);
+const aspect = mainSection.clientWidth / mainSection.clientHeight;
+const fov = 45; // Narrower field of view to reduce distortion
+const near = 0.1;
+const far = 1000;
+const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.domElement.className = 'animation';
 renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 renderer.setClearColor(0xE5CB9F);
 mainSection.appendChild(renderer.domElement);
-
-const vertexShader = `
-    varying vec3 vPosition;
-    varying vec3 worldPosition;
-    varying vec2 vUv;
-    void main() {
-        vUv = uv;
-        vPosition = position;
-        worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-`;
-
-const fragmentShader = `
-    varying vec3 vPosition;
-    varying vec3 worldPosition;
-    varying vec2 vUv;
-    uniform float time;
-    void main() {
-        float wave1 = sin(worldPosition.x * 1.5 + time * 0.5) * 0.5;
-        float wave2 = sin(worldPosition.x * 2.0 - time * 0.3) * 0.35;
-
-        vec3 darkBlue = vec3(0.0, 0.2, 0.5);
-        vec3 darkGreen = vec3(0.0, 0.4, 0.2); 
-        vec3 lightBlue = vec3(0.2, 0.4, 0.7);
-        vec3 lightGreen = vec3(0.2, 0.6, 0.4);
-
-        float waveHeight1 = vPosition.y + wave1;
-        float waveHeight2 = vPosition.y + wave2 - 0.1;
-
-        float gradientFactor1 = smoothstep(-0.5, 0.5, waveHeight1);
-        float gradientFactor2 = smoothstep(-0.5, 0.5, waveHeight2);
-
-        vec3 waveColor1 = mix(darkBlue, darkGreen, gradientFactor1);
-        vec3 waveColor2 = mix(lightBlue, lightGreen, gradientFactor2);
-
-        vec3 topColor = vec3(1.0, 1.0, 1.0);
-        float mixFactor1 = step(0.0, waveHeight1);
-        float mixFactor2 = step(0.0, waveHeight2);
-
-        vec3 finalColor = mix(waveColor1, topColor, mixFactor1) * 0.5 + mix(waveColor2, topColor, mixFactor2) * 0.5;
-        gl_FragColor = vec4(finalColor, 1.0);
-    }
-`;
-
-const material = new THREE.ShaderMaterial({
-    vertexShader,
-    fragmentShader,
-    uniforms: {
-        time: { value: 0 }
-    }
-});
-
-const cube = new THREE.Mesh(new THREE.BoxGeometry(9, 9, 9), material);
-scene.add(cube);
-
-const edges = new THREE.EdgesGeometry(cube.geometry);
-const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
-const cubeEdges = new THREE.LineSegments(edges, edgeMaterial);
-scene.add(cubeEdges);
-
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
+camera.position.z = 25;
 
-camera.position.z = 13;
+//make wampum
 
-const loader = new THREE.GLTFLoader();
-let boat;
-loader.load('assets/models/ship/scene.gltf', (gltf) => {
-    boat = gltf.scene;
-    boat.scale.set(0.25, 0.25, 0.25);
-    boat.position.set(-4.5, 0, 5);
-    scene.add(boat);
-    console.log('Boat loaded successfully', boat);
-}, undefined, (error) => {
-    console.error('An error happened', error);
-});
+function makeBead(x,y,z) {
+    const geometry = new THREE.CylinderGeometry( 1, 1, 2, 32 ); 
+    const material = new THREE.MeshBasicMaterial( {color: 0xEEEEEE} ); 
+    const bead = new THREE.Mesh( geometry, material );
+    bead.position.set(x,y,z);
+    scene.add(bead);
+}
 
-let boatSpeed = 0.01;
-let rotating = false;
-let rotationProgress = 0;
-const rotationDuration = 300;
-const rotationAngle = -Math.PI / 2;
-let initialBoatPosition = new THREE.Vector3();
+function makeThread(x, y, z) {
+    const geometry = new THREE.CylinderGeometry( 0.05, 0.05, 50, 32 ); 
+    const material = new THREE.MeshBasicMaterial( {color: 0x808080} ); 
+    const thread = new THREE.Mesh( geometry, material );
+    thread.rotation.z = Math.PI / 2;
+    thread.position.set(x,y,z);
+    scene.add(thread);
+}
 
-function animate() {
-    requestAnimationFrame(animate);
-    material.uniforms.time.value += 0.02;
-
-    if (boat && !rotating) {
-        animateBoat();
+function makeWampum() {
+    for (let i=-5; i < 7.5; i=i+2.5) {
+        makeThread(0,i,0);
+        if (i < 5) {
+            for (let i2=-25; i2 < 27.5; i2=i2+2.5) {
+                makeBead(i2,i+1.25,0);
+            }
+        }  
     }
 
-    if (rotating) {
-        rotateScene();
-    }
-
-    renderer.render(scene, camera);
-}
-animate();
-
-function animateBoat() {
-    const time = material.uniforms.time.value;
-    const wave1 = Math.sin(boat.position.x * 1.5 + time * 0.5) * 0.2;
-    const wave2 = Math.sin(boat.position.x * 2.0 - time * 0.3) * 0.14 - 0.04;
-    boat.position.y = wave1 + wave2;
-    boat.rotation.z = Math.sin(time * 0.5) * 0.05;
-    boat.rotation.x = Math.cos(time * 0.3) * 0.05;
-
-    boat.position.x += boatSpeed;
-    if (boat.position.x >= 4.5) {
-        boat.position.x = 4.5;
-        startRotation();
-    }
+    
 }
 
-function rotateScene() {
-    rotationProgress += 1;
-    const rotationFraction = rotationProgress / rotationDuration;
-    const currentRotationAngle = rotationFraction * rotationAngle;
-
-    cube.rotation.y = currentRotationAngle;
-    cubeEdges.rotation.y = currentRotationAngle;
-
-    const cosAngle = Math.cos(currentRotationAngle);
-    const sinAngle = Math.sin(currentRotationAngle);
-    const newX = initialBoatPosition.x * cosAngle + initialBoatPosition.z * sinAngle;
-    const newZ = -initialBoatPosition.x * sinAngle + initialBoatPosition.z * cosAngle;
-    boat.position.set(newX, boat.position.y, newZ);
-
-    if (rotationProgress >= rotationDuration) {
-        rotating = false;
-        resetBoatPosition();
-    }
-}
-
-function startRotation() {
-    rotating = true;
-    rotationProgress = 0;
-    initialBoatPosition.copy(boat.position);
-}
-
-function resetBoatPosition() {
-    boat.position.set(-4.5, 0, 4.5);
-    boat.rotation.set(0, 0, 0);
-    cube.rotation.y = 0;
-    cubeEdges.rotation.y = 0;
-}
+makeWampum();
+//animate THREE
 
 window.addEventListener('resize', onWindowResize, false);
 function onWindowResize() {
@@ -162,26 +57,9 @@ function onWindowResize() {
     renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 }
 
-const sunGeometry = new THREE.CircleGeometry(1, 32, Math.PI, Math.PI);
-const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xFFA500, side: THREE.DoubleSide });
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
 
-const sunPositions = [
-    [0, 4.49, 4.51],  
-    [0, 4.49, -4.51],
-    [4.51, 4.49, 0],  
-    [-4.51, 4.49, 0]  
-];
-
-const sunRotations = [
-    [0, 0, 0],
-    [0, Math.PI, 0],
-    [0, -Math.PI / 2, 0],
-    [0, Math.PI / 2, 0]
-];
-
-sunPositions.forEach((position, index) => {
-    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-    sun.position.set(...position);
-    sun.rotation.set(...sunRotations[index]);
-    cube.add(sun);
-});
+animate();
