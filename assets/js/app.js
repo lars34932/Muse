@@ -18,8 +18,11 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickableObjects = [];
 const rotatingBeads = new Map();
+const beadCount = 84;
+const rotating = Array.from({ length: beadCount }, () => Math.random() > 0.60);
 
 // make wampum
+let beadIndex = 0;
 function makeBead(x, y, z) {
     const geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
     const material = new THREE.ShaderMaterial({
@@ -44,6 +47,10 @@ function makeBead(x, y, z) {
 
     const bead = new THREE.Mesh(geometry, material);
     bead.position.set(x, y, z);
+    if (rotating[beadIndex]) {
+        bead.rotation.y = Math.PI;
+    }
+    beadIndex++;
     scene.add(bead);
     clickableObjects.push(bead);
 }
@@ -82,12 +89,14 @@ function onMouseClick(event) {
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(clickableObjects);
 
     if (intersects.length > 0) {
         const bead = intersects[0].object;
-        const targetRotation = (rotatingBeads.get(bead) || 0) + Math.PI;
+        const currentRotation = bead.rotation.y % (2 * Math.PI);
+        const targetRotation = currentRotation === 0 ? Math.PI : 0;
         rotatingBeads.set(bead, targetRotation);
     }
 }
@@ -102,6 +111,13 @@ function animate() {
             bead.rotation.y += 0.05;
             if (bead.rotation.y >= targetRotation) {
                 bead.rotation.y = targetRotation;
+                rotatingBeads.delete(bead);
+            }
+        } else if (bead.rotation.y > targetRotation) {
+            bead.rotation.y -= 0.05;
+            if (bead.rotation.y <= targetRotation) {
+                bead.rotation.y = targetRotation;
+                rotatingBeads.delete(bead);
             }
         }
     });
