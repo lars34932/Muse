@@ -2,7 +2,7 @@
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
 const aspect = mainSection.clientWidth / mainSection.clientHeight;
-const fov = 10;
+const fov = 11;
 const near = 0.1;
 const far = 1000;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);

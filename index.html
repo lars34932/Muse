@@ -1,52 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <title>Wampum</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
-</head>
-
-<body class="body">
-  <header class="header">
-    <div class="header__div header__div1">
-      <a href="" class="header__link">Animatie</a>
-      <a href="view.html" class="header__link">3D Wereld</a>
-      <a href="https://www.amsterdammuseum.nl/tentoonstelling/manahahtaanung-of-nieuw-amsterdam/89642"
-        class="header__link">Tentoonstelling</a>
-    </div>
-    <div class="header__div header__div2">
-      <h1 class="header__title">Wampum</h1>
-    </div>
-    <div class="header__div header__div3">
-      <a href="index.html" class="header__link">Home</a>
-    </div>
-  </header>
-  <main class="main">
-    <section class="main__animation">
-      <img class="background-image" />
-      <script src="assets/js/app.js"></script>
-    </section>
-    <section class="main__info">
-      <h2>Info</h2>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam quae
-        maxime recusandae itaque. At unde cumque, animi, accusamus nobis quasi
-        et delectus voluptatum praesentium obcaecati modi in magni id optio.
-      </p>
-    </section>
-    <section class="main__video"></section>
-    <section class="main__world"></section>
-  </main>
-  <footer class="footer">
-    <p>footer</p>
-  </footer>
-</body>
-
+<html lang="nl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="assets/css/style.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+		<title>Wampum Museum</title>
+	</head>
+	<body>
+		<header class="header">
+			<nav class="nav">
+				<a href="index.html" class="nav__link">Home</a>
+        		<a href="view.html" class="nav__link">3D wereld</a>
+				<a href="https://www.amsterdammuseum.nl/contact" class="nav__link">Contact</a>
+				<a href="https://www.amsterdammuseum.nl/tickets-en-bezoek" class="nav__link">Bezoek</a>
+			</nav>
+		</header>
+		<main>
+			<section class="main__animation">
+				<script src="assets/js/app.js"></script>
+			</section>
+			<section class="features">
+				<div class="feature-card">
+					<img src="assets/img/over_wampum.webp"alt="Historische Tentoonstellingen"class="feature-card__image"/>
+					<div class="feature-card__content">
+						<h2 class="feature-card__title">3D wereld</h2>
+						<p class="feature-card__description">Verken een 3D stad waar vroeger een wampum gemaakt zou worden</p>
+						<a href="view.html" class="feature-card__link">Bekijk</a>
+					</div>
+				</div>
+				<div class="feature-card">
+					<img src="assets/img/wampum_animatie.webp" alt="Educatieve Programma's" class="feature-card__image"/>
+					<div class="feature-card__content">
+						<h2 class="feature-card__title">Wampum Animatie</h2>
+						<p class="feature-card__description">Bekijk hier de geanimeerde video over Wampum! Bent u benieuwd naar de geschiedenis van Wampum? Bekijk dan deze video en ontdek meer!</p>
+						<a href="animation.html" class="feature-card__link" >Speel Af</a>
+					</div>
+				</div>
+			</section>
+			<section class="over">
+				<header id="over">
+					<h2>Over Wampum</h2>
+				</header>
+				<div>
+					<div>
+						<p><strong>Wampum</strong> verwijst naar de traditionele kralen gemaakt van schelpen, die een belangrijke rol spelen in de cultuur en geschiedenis van de inheemse volkeren in Noord-Amerika. Wampum werd voornamelijk vervaardigd uit de schelpen van de kwahog en de wulk.</p>
+						<p>Wampum had meerdere functies. Het werd gebruikt als een vorm van valuta, maar diende ook als een middel om belangrijke gebeurtenissen en afspraken te documenteren. De kralen werden verweven in riemen, die vaak complexe patronen en symbolen bevatten die verhalen en overeenkomsten weergaven.</p>
+						<p><strong>Historische Betekenis:</strong> De Europese kolonisten erkenden al snel de waarde van wampum en namen het over als een ruilmiddel tijdens de handel met inheemse gemeenschappen. Wampum speelde ook een cruciale rol in diplomatieke relaties en vredesverdragen tussen verschillende stammen en tussen de inheemse volkeren en de kol</p>
+						<p><strong>Culturele Waarde:</strong> Wampum is meer dan alleen decoratie; het is een symbool van identiteit, erfgoed en spirituele betekenis voor de inheemse volkeren. Elke riem en elk patroon heeft een specifieke betekenis en wordt vaak doorgegeven van generatie op generatie als een waardevol erfstuk.</p>
+						<p>Vandaag de dag wordt wampum nog steeds gerespecteerd en gewaardeerd in inheemse gemeenschappen. Het wordt gebruikt in ceremonies, als onderdeel van culturele evenementen, en als een manier om verbinding te maken met de voorouders en de geschiedenis.</p>
+					</div>
+					<figure>
+						<img src="assets/img/wampoon_over_section.webp" alt="Wampum" />
+					</figure>
+				</div>
+			</section>
+		</main>
+		<footer class="footer">
+			<p class="footer__text">
+				© 2024 Wampum. In collaboratie met het Amsterdam Museum. Alle rechten voorbehouden.
+			</p>
+		</footer>
+	</body>
 </html>
