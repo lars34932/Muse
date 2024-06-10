@@ -1,0 +1,31 @@
+*, *::before, *::after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html{
+    font-size: 62.5%;
+    font-family: sans-serif;
+}
+
+body{
+    width: 100%;
+    overflow: hidden;
+}
+
+.header{
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.header__link{
+    font-size: 3rem;
+}
+
+canvas{
+    width: 100%;
+    display: block;
+}
