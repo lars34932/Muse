@@ -1,4 +1,5 @@
   const int sensorPin = A0;
+  //kijk eerst wat ie aangeefd en pas dan baseTemp aan 
   const float baselineTemp = 16.5;
 
 void setup() {
