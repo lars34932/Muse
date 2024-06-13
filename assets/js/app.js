@@ -1,4 +1,3 @@
-// THREE settings
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
 const aspect = mainSection.clientWidth / mainSection.clientHeight;
@@ -9,17 +8,27 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.domElement.className = 'animation';
 renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
-renderer.setClearColor(0xE5CB9F);
+renderer.setClearColor(0xEEEEEE);
 mainSection.appendChild(renderer.domElement);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
-camera.position.z = 70;
+camera.position.set(0, 0, 70);
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickableObjects = [];
 const rotatingBeads = new Map();
 const beadCount = 84;
 const rotating = Array.from({ length: beadCount }, () => Math.random() > 0.60);
+
+// Initial angles for the camera position
+let theta = 0;
+let phi = Math.acos(camera.position.y / 70);
+
+// Smooth camera movement variables
+let targetCameraPosition = new THREE.Vector3(0, 0, 70);
+let isDragging = false;
+let previousMousePosition = { x: 0, y: 0 };
+const cameraDistance = 70; // Fixed distance from the center
 
 // make wampum
 let beadIndex = 0;
@@ -65,11 +74,11 @@ function makeThread(x, y, z) {
 }
 
 function makeWampum() {
-    for (let i = -5; i < 7.5; i = i + 2.5) {
-        makeThread(0, i, 0);
-        if (i < 5) {
-            for (let i2 = -25; i2 < 27.5; i2 = i2 + 2.5) {
-                makeBead(i2, i + 1.25, 0);
+    for (let y = -5; y < 7.5; y = y + 2.5) {
+        makeThread(0, y, 0);
+        if (y < 5) {
+            for (let x = -25; x < 27.5; x = x + 2.5) {
+                makeBead(x, y + 1.25, 0);
             }
         }
     }
@@ -103,24 +112,56 @@ function onMouseClick(event) {
 
 window.addEventListener('click', onMouseClick, false);
 
+mainSection.addEventListener('mousedown', (event) => {
+    isDragging = true;
+    previousMousePosition.x = event.clientX;
+    previousMousePosition.y = event.clientY;
+});
+
+mainSection.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+mainSection.addEventListener('mousemove', (event) => {
+    if (!isDragging) return;
+
+    const deltaMove = {
+        x: event.clientX - previousMousePosition.x,
+        y: event.clientY - previousMousePosition.y
+    };
+
+    theta += deltaMove.x * 0.005;
+    phi -= deltaMove.y * 0.005;
+
+    phi = Math.max(0.1, Math.min(Math.PI - 0.1, phi));
+
+    targetCameraPosition.x = cameraDistance * Math.sin(phi) * Math.cos(theta);
+    targetCameraPosition.y = cameraDistance * Math.cos(phi);
+    targetCameraPosition.z = cameraDistance * Math.sin(phi) * Math.sin(theta);
+
+    previousMousePosition = {
+        x: event.clientX,
+        y: event.clientY
+    };
+});
+
 function animate() {
     requestAnimationFrame(animate);
 
     rotatingBeads.forEach((targetRotation, bead) => {
-        if (bead.rotation.y < targetRotation) {
-            bead.rotation.y += 0.05;
-            if (bead.rotation.y >= targetRotation) {
-                bead.rotation.y = targetRotation;
-                rotatingBeads.delete(bead);
-            }
-        } else if (bead.rotation.y > targetRotation) {
-            bead.rotation.y -= 0.05;
-            if (bead.rotation.y <= targetRotation) {
-                bead.rotation.y = targetRotation;
-                rotatingBeads.delete(bead);
-            }
+        const rotationStep = 0.05;
+        const direction = (targetRotation - bead.rotation.y > 0) ? 1 : -1;
+        bead.rotation.y += direction * rotationStep;
+
+        if (Math.abs(targetRotation - bead.rotation.y) < rotationStep) {
+            bead.rotation.y = targetRotation;
+            rotatingBeads.delete(bead);
         }
     });
+
+    // Smooth camera movement
+    camera.position.lerp(targetCameraPosition, 0.1);
+    camera.lookAt(scene.position);
 
     renderer.render(scene, camera);
 }
