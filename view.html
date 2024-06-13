@@ -1,22 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Cube with Custom Mouse Rotation</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="assets/js/view.js" defer></script>
-    <link rel="stylesheet" href="assets/css/view-style.css">
-    <style>
-    </style>
-</head>
-<body>
-    <header class="header">
-        <button class="header__link" onclick="moveCamera(1)">center</button>
-        <button class="header__link" onclick="moveCamera(2)">green store</button>
-        <button class="header__link" onclick="moveCamera(3)">red house</button>
-        <button class="header__link" onclick="moveCamera(4)">top view</button>
-    </header>    
+<html lang="nl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="assets/css/style.css" />
+        <link rel="stylesheet" href="assets/css/reset.css">
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+		<title>Wampum Museum</title>
+	</head>
+	<body>
+		<header class="header">
+			<nav class="nav">
+				<a href="index.html" class="nav__link">Home</a>
+        		<a href="view.html" class="nav__link">3D wereld</a>
+				<a href="https://www.amsterdammuseum.nl/contact" class="nav__link">Contact</a>
+				<a href="https://www.amsterdammuseum.nl/tickets-en-bezoek" class="nav__link">Bezoek</a>
+			</nav>
+		</header>
+        <div class="menu">
+            <button class="header__link" onclick="moveCamera(1)">center</button>
+            <button class="header__link" onclick="moveCamera(2)">green store</button>
+            <button class="header__link" onclick="moveCamera(3)">red house</button>
+            <button class="header__link" onclick="moveCamera(4)">top view</button>
+        </div>    
 </body>
 </html>
