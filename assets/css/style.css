@@ -207,7 +207,7 @@
     display: flex;
     gap: 4rem;
     justify-content: center;
-    height: 100%;
+    align-items: center;
 }
 
 .about__text {
