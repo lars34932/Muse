@@ -19,16 +19,12 @@ const clickableObjects = [];
 const rotatingBeads = new Map();
 const beadCount = 84;
 const rotating = Array.from({ length: beadCount }, () => Math.random() > 0.60);
-
-// Initial angles for the camera position
 let theta = 0;
 let phi = Math.acos(camera.position.y / 70);
-
-// Smooth camera movement variables
 let targetCameraPosition = new THREE.Vector3(0, 0, 70);
 let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
-const cameraDistance = 70; // Fixed distance from the center
+const cameraDistance = 70;
 
 // make wampum
 let beadIndex = 0;
@@ -159,7 +155,6 @@ function animate() {
         }
     });
 
-    // Smooth camera movement
     camera.position.lerp(targetCameraPosition, 0.1);
     camera.lookAt(scene.position);
 

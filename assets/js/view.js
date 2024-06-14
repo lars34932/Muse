@@ -1,12 +1,16 @@
+const mainSection = document.getElementsByClassName("main__section")[0];
+const fixedHeight = 1179;
+const aspect = mainSection.clientWidth / fixedHeight;
 const scene = new THREE.Scene();
-
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 2000);
 camera.position.set(0, 100, 0);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(mainSection.clientWidth, fixedHeight);
 renderer.setClearColor(0xadd8e6);
-document.body.appendChild(renderer.domElement);
+renderer.domElement.className = 'animation';
+mainSection.appendChild(renderer.domElement);
+camera.updateProjectionMatrix();
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
@@ -28,6 +32,8 @@ scene.add(spotLight.target);
 let initialMouseX = 0;
 let initialMouseY = 0;
 let isMouseDown = false;
+let mouseX = 0;
+let mouseY = 0;
 
 function onMouseMove(event) {
     if (isMouseDown) {
@@ -63,22 +69,15 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (isMouseDown) {
-        // Adjust these values to change sensitivity
         const sensitivity = 0.05;
         yaw -= mouseX * sensitivity;
         pitch -= mouseY * sensitivity;
 
-        // Clamp the vertical rotation to prevent flipping
         pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
 
-        // Create quaternions for the yaw (horizontal rotation) and pitch (vertical rotation)
-        const quaternionYaw = new THREE.Quaternion();
-        quaternionYaw.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+        const quaternionYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+        const quaternionPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
 
-        const quaternionPitch = new THREE.Quaternion();
-        quaternionPitch.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
-
-        // Combine the yaw and pitch rotations
         camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
     }
 
@@ -90,45 +89,43 @@ function moveCamera(i) {
         camera.position.set(0, 100, 0);
         yaw = Math.PI / 4;
         pitch = 0;
-        const quaternionYaw = new THREE.Quaternion();
-        quaternionYaw.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-        const quaternionPitch = new THREE.Quaternion();
-        quaternionPitch.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
-        camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
-    }
-    
-    if (i == 2) {
+    } else if (i == 2) {
         camera.position.set(0, 100, -500);
         yaw = Math.PI / 2;
         pitch = 0;
-        const quaternionYaw = new THREE.Quaternion();
-        quaternionYaw.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-        const quaternionPitch = new THREE.Quaternion();
-        quaternionPitch.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
-        camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
-    }
-
-    if (i == 3) {
+    } else if (i == 3) {
         camera.position.set(0, 100, 500);
         yaw = Math.PI / 5;
         pitch = 0;
-        const quaternionYaw = new THREE.Quaternion();
-        quaternionYaw.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-        const quaternionPitch = new THREE.Quaternion();
-        quaternionPitch.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
-        camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
-    }
-
-    if (i == 4) {
+    } else if (i == 4) {
         camera.position.set(0, 1000, 0);
         yaw = 0;
         pitch = -1.5;
-        const quaternionYaw = new THREE.Quaternion();
-        quaternionYaw.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-        const quaternionPitch = new THREE.Quaternion();
-        quaternionPitch.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
-        camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
     }
+
+    const quaternionYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+    const quaternionPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
+    camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
+}
+
+window.addEventListener('resize', onWindowResize, false);
+function onWindowResize() {
+    const aspect = mainSection.clientWidth / fixedHeight;
+    camera.aspect = aspect;
+    camera.updateProjectionMatrix();
+    renderer.setSize(mainSection.clientWidth, fixedHeight);
 }
 
 animate();
+
+const menu = document.getElementById("menu");
+let visible = false;
+function appear() {
+    if (visible === false) {
+        menu.style.display = "flex";
+        visible = true;
+    } else {
+        menu.style.display = "none";
+        visible = false;
+    }
+}
