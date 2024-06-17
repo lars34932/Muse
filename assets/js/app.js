@@ -1,3 +1,4 @@
+// Setup main elements
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
 const aspect = mainSection.clientWidth / mainSection.clientHeight;
@@ -6,37 +7,45 @@ const near = 0.1;
 const far = 1000;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+
 renderer.domElement.className = 'animation';
 renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 renderer.setClearColor(0xEEEEEE);
 mainSection.appendChild(renderer.domElement);
+
+// Lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
-camera.position.set(0, 0, 70);
+
+// Camera settings
+const originalCameraPosition = new THREE.Vector3(0, 0, 70);
+camera.position.copy(originalCameraPosition);
+const cameraTarget = new THREE.Vector3(0, 0, 0);
+
+// Add OrbitControls
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.copy(cameraTarget);
+controls.update();
+
+// Interaction variables
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickableObjects = [];
 const rotatingBeads = new Map();
 const beadCount = 84;
 const rotating = Array.from({ length: beadCount }, () => Math.random() > 0.60);
-let theta = 0;
-let phi = Math.acos(camera.position.y / 70);
-let targetCameraPosition = new THREE.Vector3(0, 0, 70);
-let isDragging = false;
-let previousMousePosition = { x: 0, y: 0 };
-const cameraDistance = 70;
+let inactivityTimer = null;
 
-// make wampum
-let beadIndex = 0;
-function makeBead(x, y, z) {
+// Utility functions
+function createBead(x, y, z) {
     const geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
     const material = new THREE.ShaderMaterial({
         vertexShader: `
-        varying vec3 vPosition;
-        void main() {
-            vPosition = position;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
+            varying vec3 vPosition;
+            void main() {
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
         `,
         fragmentShader: `
             varying vec3 vPosition;
@@ -52,15 +61,14 @@ function makeBead(x, y, z) {
 
     const bead = new THREE.Mesh(geometry, material);
     bead.position.set(x, y, z);
-    if (rotating[beadIndex]) {
+    if (rotating[clickableObjects.length]) {
         bead.rotation.y = Math.PI;
     }
-    beadIndex++;
     scene.add(bead);
     clickableObjects.push(bead);
 }
 
-function makeThread(x, y, z) {
+function createThread(x, y, z) {
     const geometry = new THREE.CylinderGeometry(0.05, 0.05, 50, 32);
     const material = new THREE.MeshBasicMaterial({ color: 0x808080 });
     const thread = new THREE.Mesh(geometry, material);
@@ -69,25 +77,23 @@ function makeThread(x, y, z) {
     scene.add(thread);
 }
 
-function makeWampum() {
-    for (let y = -5; y < 7.5; y = y + 2.5) {
-        makeThread(0, y, 0);
+function createWampum() {
+    for (let y = -5; y < 7.5; y += 2.5) {
+        createThread(0, y, 0);
         if (y < 5) {
-            for (let x = -25; x < 27.5; x = x + 2.5) {
-                makeBead(x, y + 1.25, 0);
+            for (let x = -25; x < 27.5; x += 2.5) {
+                createBead(x, y + 1.25, 0);
             }
         }
     }
 }
 
-makeWampum();
-
-// animate THREE
-window.addEventListener('resize', onWindowResize, false);
+// Event handlers
 function onWindowResize() {
     camera.aspect = mainSection.clientWidth / mainSection.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
+    resetInactivityTimer();
 }
 
 function onMouseClick(event) {
@@ -104,43 +110,10 @@ function onMouseClick(event) {
         const targetRotation = currentRotation === 0 ? Math.PI : 0;
         rotatingBeads.set(bead, targetRotation);
     }
+    resetInactivityTimer();
 }
 
-window.addEventListener('click', onMouseClick, false);
-
-mainSection.addEventListener('mousedown', (event) => {
-    isDragging = true;
-    previousMousePosition.x = event.clientX;
-    previousMousePosition.y = event.clientY;
-});
-
-mainSection.addEventListener('mouseup', () => {
-    isDragging = false;
-});
-
-mainSection.addEventListener('mousemove', (event) => {
-    if (!isDragging) return;
-
-    const deltaMove = {
-        x: event.clientX - previousMousePosition.x,
-        y: event.clientY - previousMousePosition.y
-    };
-
-    theta += deltaMove.x * 0.005;
-    phi -= deltaMove.y * 0.005;
-
-    phi = Math.max(0.1, Math.min(Math.PI - 0.1, phi));
-
-    targetCameraPosition.x = cameraDistance * Math.sin(phi) * Math.cos(theta);
-    targetCameraPosition.y = cameraDistance * Math.cos(phi);
-    targetCameraPosition.z = cameraDistance * Math.sin(phi) * Math.sin(theta);
-
-    previousMousePosition = {
-        x: event.clientX,
-        y: event.clientY
-    };
-});
-
+// Animation loop
 function animate() {
     requestAnimationFrame(animate);
 
@@ -155,10 +128,26 @@ function animate() {
         }
     });
 
-    camera.position.lerp(targetCameraPosition, 0.1);
-    camera.lookAt(scene.position);
-
+    controls.update();
     renderer.render(scene, camera);
 }
 
+// Inactivity timer
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        controls.reset();
+    }, 10000);
+}
+
+// Initialization
+createWampum();
 animate();
+resetInactivityTimer();
+
+// Event listeners
+window.addEventListener('resize', onWindowResize, false);
+window.addEventListener('click', onMouseClick, false);
+renderer.domElement.addEventListener('mousedown', resetInactivityTimer, false);
+renderer.domElement.addEventListener('mouseup', resetInactivityTimer, false);
+renderer.domElement.addEventListener('mousemove', resetInactivityTimer, false);
