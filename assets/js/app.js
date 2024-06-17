@@ -1,4 +1,3 @@
-// Setup main elements
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
 const aspect = mainSection.clientWidth / mainSection.clientHeight;
@@ -13,21 +12,17 @@ renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
 renderer.setClearColor(0xEEEEEE);
 mainSection.appendChild(renderer.domElement);
 
-// Lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-// Camera settings
 const originalCameraPosition = new THREE.Vector3(0, 0, 70);
 camera.position.copy(originalCameraPosition);
 const cameraTarget = new THREE.Vector3(0, 0, 0);
 
-// Add OrbitControls
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.target.copy(cameraTarget);
 controls.update();
 
-// Interaction variables
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickableObjects = [];
@@ -36,7 +31,6 @@ const beadCount = 84;
 const rotating = Array.from({ length: beadCount }, () => Math.random() > 0.60);
 let inactivityTimer = null;
 
-// Utility functions
 function createBead(x, y, z) {
     const geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
     const material = new THREE.ShaderMaterial({
@@ -88,7 +82,6 @@ function createWampum() {
     }
 }
 
-// Event handlers
 function onWindowResize() {
     camera.aspect = mainSection.clientWidth / mainSection.clientHeight;
     camera.updateProjectionMatrix();
@@ -113,7 +106,6 @@ function onMouseClick(event) {
     resetInactivityTimer();
 }
 
-// Animation loop
 function animate() {
     requestAnimationFrame(animate);
 
@@ -132,7 +124,6 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// Inactivity timer
 function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => {
@@ -140,12 +131,10 @@ function resetInactivityTimer() {
     }, 10000);
 }
 
-// Initialization
 createWampum();
 animate();
 resetInactivityTimer();
 
-// Event listeners
 window.addEventListener('resize', onWindowResize, false);
 window.addEventListener('click', onMouseClick, false);
 renderer.domElement.addEventListener('mousedown', resetInactivityTimer, false);
