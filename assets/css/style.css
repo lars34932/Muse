@@ -7,14 +7,15 @@
     box-sizing: border-box;
 }
 
-html {
+/* General styles */
+.html {
     text-decoration: none;
     font-size: 62.5%;
     scroll-behavior: smooth;
 }
 
-body {
-    font-family: 'IM Fell English', serif;
+.body {
+    font-family: 'IM Fell English', sans-serif;
     font-weight: 400;
     line-height: 1.6;
     color: #333;
@@ -57,6 +58,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 100%;
+    overflow: hidden;
 }
 
 .animation {
@@ -93,37 +95,53 @@ body {
 .features {
     display: flex;
     justify-content: center;
-    padding: 4rem;
+    flex-direction: column;
+    padding: 8rem;
     background-color: #f5f5f5;
-    gap: 7rem;
 }
 
-.feature-card {
+.features__header {
+    width: 100%;    
+    display: flex;              
+    justify-content: center;
+    padding: 2rem;
+    border-top: 0.5rem solid #333;
+}
+
+.features__title {
+    color: black;
+    font-size: 350%;
+}
+
+.features__cards {
+    display: flex; 
+    justify-content: space-evenly;
+}
+
+.features__card {
     background: #fff;
-    border: 2px solid #a0522d;
+    border: 2px solid #333;
     border-radius: 1rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
     max-width: 60rem;
     padding: 3rem;
     background-image: url('assets/img/wampum_frame.png');
-    /* Path to the wampum frame image */
     background-size: cover;
     background-position: center;
     position: relative;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
-
 }
 
-.feature-card:hover {
+.features__card:hover {
     transform: translateY(-10px) scale(1.05);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     background-color: hsl(30, 60%, 61%);
     /* Slight color variation on hover */
 }
 
-.feature-card__image {
+.features__card__image {
     width: 100%;
     height: 20rem;
     object-fit: cover;
@@ -133,28 +151,28 @@ body {
     position: relative;
 }
 
-.feature-card__content {
+.features__card__content {
     position: relative;
     z-index: 2;
 }
 
-.feature-card__title {
+.features__card__title {
     font-size: 2.4rem;
     margin-bottom: 0.5rem;
 }
 
-.feature-card__description {
+.features__card__description {
     font-size: 1.6rem;
     margin-bottom: 1rem;
 }
 
-.feature-card__link {
+.features__card__link {
     font-size: 1.9rem;
     text-decoration: none;
     color: #333;
 }
 
-.feature-card__link:hover {
+.features__card__link:hover {
     text-decoration: underline;
 }
 
@@ -167,60 +185,57 @@ body {
     font-size: 1.5rem;
 }
 
-.over {
+/* About Section */
+.about {
     padding: 8rem;
-    height: 80rem;
-    border-bottom: 0.5rem solid #333;
+    width: 100%;
 }
 
-.over>header {
+.about__header {
     width: 100%;
     display: flex;
     justify-content: center;
     padding: 2rem;
     border-top: 0.5rem solid #333;
-
 }
 
-.over>header>h2 {
+.about__title {
     color: black;
     font-size: 350%;
 }
 
-.over>div {
+.about__content {
     display: flex;
     gap: 4rem;
     justify-content: center;
-    height: 100%;
+    align-items: center;
 }
 
-.over>div>div {
+.about__text {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
 
-.over>div>div>p {
+.about__paragraph {
     width: 95ch;
     color: black;
     font-size: 1.7rem;
 }
 
-.over>div>figure>img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    border-radius: 0.5rem;
-}
-
-.over>div>figure {
+.about__figure {
     position: relative;
     width: 50rem;
     height: 40rem;
 }
 
+.about__image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
 
-.over>div>figure::after {
+.about__figure::after {
     content: "";
     background: linear-gradient(to bottom right, rgba(191, 160, 130, 0.8), rgba(178, 121, 73, 0.5));
     height: 100%;

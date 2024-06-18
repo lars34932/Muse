@@ -1,4 +1,3 @@
-// THREE settings
 const mainSection = document.getElementsByClassName("main__animation")[0];
 const scene = new THREE.Scene();
 const aspect = mainSection.clientWidth / mainSection.clientHeight;
@@ -7,31 +6,40 @@ const near = 0.1;
 const far = 1000;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+
 renderer.domElement.className = 'animation';
 renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
-renderer.setClearColor(0xE5CB9F);
+renderer.setClearColor(0xEEEEEE);
 mainSection.appendChild(renderer.domElement);
+
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
-camera.position.z = 70;
+
+const originalCameraPosition = new THREE.Vector3(0, 0, 70);
+camera.position.copy(originalCameraPosition);
+const cameraTarget = new THREE.Vector3(0, 0, 0);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.copy(cameraTarget);
+controls.update();
+
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickableObjects = [];
 const rotatingBeads = new Map();
 const beadCount = 84;
 const rotating = Array.from({ length: beadCount }, () => Math.random() > 0.60);
+let inactivityTimer = null;
 
-// make wampum
-let beadIndex = 0;
-function makeBead(x, y, z) {
+function createBead(x, y, z) {
     const geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
     const material = new THREE.ShaderMaterial({
         vertexShader: `
-        varying vec3 vPosition;
-        void main() {
-            vPosition = position;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
+            varying vec3 vPosition;
+            void main() {
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
         `,
         fragmentShader: `
             varying vec3 vPosition;
@@ -47,15 +55,14 @@ function makeBead(x, y, z) {
 
     const bead = new THREE.Mesh(geometry, material);
     bead.position.set(x, y, z);
-    if (rotating[beadIndex]) {
+    if (rotating[clickableObjects.length]) {
         bead.rotation.y = Math.PI;
     }
-    beadIndex++;
     scene.add(bead);
     clickableObjects.push(bead);
 }
 
-function makeThread(x, y, z) {
+function createThread(x, y, z) {
     const geometry = new THREE.CylinderGeometry(0.05, 0.05, 50, 32);
     const material = new THREE.MeshBasicMaterial({ color: 0x808080 });
     const thread = new THREE.Mesh(geometry, material);
@@ -64,25 +71,22 @@ function makeThread(x, y, z) {
     scene.add(thread);
 }
 
-function makeWampum() {
-    for (let i = -5; i < 7.5; i = i + 2.5) {
-        makeThread(0, i, 0);
-        if (i < 5) {
-            for (let i2 = -25; i2 < 27.5; i2 = i2 + 2.5) {
-                makeBead(i2, i + 1.25, 0);
+function createWampum() {
+    for (let y = -5; y < 7.5; y += 2.5) {
+        createThread(0, y, 0);
+        if (y < 5) {
+            for (let x = -25; x < 27.5; x += 2.5) {
+                createBead(x, y + 1.25, 0);
             }
         }
     }
 }
 
-makeWampum();
-
-// animate THREE
-window.addEventListener('resize', onWindowResize, false);
 function onWindowResize() {
     camera.aspect = mainSection.clientWidth / mainSection.clientHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(mainSection.clientWidth, mainSection.clientHeight);
+    resetInactivityTimer();
 }
 
 function onMouseClick(event) {
@@ -99,30 +103,40 @@ function onMouseClick(event) {
         const targetRotation = currentRotation === 0 ? Math.PI : 0;
         rotatingBeads.set(bead, targetRotation);
     }
+    resetInactivityTimer();
 }
-
-window.addEventListener('click', onMouseClick, false);
 
 function animate() {
     requestAnimationFrame(animate);
 
     rotatingBeads.forEach((targetRotation, bead) => {
-        if (bead.rotation.y < targetRotation) {
-            bead.rotation.y += 0.05;
-            if (bead.rotation.y >= targetRotation) {
-                bead.rotation.y = targetRotation;
-                rotatingBeads.delete(bead);
-            }
-        } else if (bead.rotation.y > targetRotation) {
-            bead.rotation.y -= 0.05;
-            if (bead.rotation.y <= targetRotation) {
-                bead.rotation.y = targetRotation;
-                rotatingBeads.delete(bead);
-            }
+        const rotationStep = 0.05;
+        const direction = (targetRotation - bead.rotation.y > 0) ? 1 : -1;
+        bead.rotation.y += direction * rotationStep;
+
+        if (Math.abs(targetRotation - bead.rotation.y) < rotationStep) {
+            bead.rotation.y = targetRotation;
+            rotatingBeads.delete(bead);
         }
     });
 
+    controls.update();
     renderer.render(scene, camera);
 }
 
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        controls.reset();
+    }, 10000);
+}
+
+createWampum();
 animate();
+resetInactivityTimer();
+
+window.addEventListener('resize', onWindowResize, false);
+window.addEventListener('click', onMouseClick, false);
+renderer.domElement.addEventListener('mousedown', resetInactivityTimer, false);
+renderer.domElement.addEventListener('mouseup', resetInactivityTimer, false);
+renderer.domElement.addEventListener('mousemove', resetInactivityTimer, false);
