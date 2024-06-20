@@ -128,7 +128,7 @@ function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => {
         controls.reset();
-    }, 10000);
+    }, 5000);
 }
 
 createWampum();
