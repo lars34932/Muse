@@ -2,8 +2,15 @@ const mainSection = document.getElementsByClassName("main__section")[0];
 const fixedHeight = 1179;
 const aspect = mainSection.clientWidth / fixedHeight;
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 2000);
-camera.position.set(0, 100, 0);
+const camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 5000);
+camera.position.set(0, 2, 0);
+
+let yaw = Math.PI / 1.3;
+let pitch = -0.1;
+
+const quaternionYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+const quaternionPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
+camera.quaternion.copy(quaternionYaw).multiply(quaternionPitch);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(mainSection.clientWidth, fixedHeight);
@@ -57,13 +64,21 @@ renderer.domElement.addEventListener('mousedown', onMouseDown, false);
 renderer.domElement.addEventListener('mouseup', onMouseUp, false);
 
 const loader = new THREE.GLTFLoader();
-loader.load('assets/models/town/scene.gltf', function (gltf) {
-    const model = gltf.scene;
-    scene.add(model);
-});
-
-let yaw = 0;
-let pitch = 0;
+loader.load(
+    'assets/models/town/model.glb',
+    function (gltf) {
+        const model = gltf.scene;
+        if (model instanceof THREE.Object3D) {
+            scene.add(model);
+        } else {
+            console.error('Loaded model is not an instance of THREE.Object3D:', model);
+        }
+    },
+    undefined,
+    function (error) {
+        console.error('An error happened while loading the model:', error);
+    }
+);
 
 function animate() {
     requestAnimationFrame(animate);
@@ -86,19 +101,19 @@ function animate() {
 
 function moveCamera(i) {
     if (i == 1) {
-        camera.position.set(0, 100, 0);
-        yaw = Math.PI / 4;
-        pitch = 0;
+        camera.position.set(0, 2, 0);
+        yaw = Math.PI / 1.3;
+        pitch = -0.1;
     } else if (i == 2) {
-        camera.position.set(0, 100, -500);
-        yaw = Math.PI / 2;
-        pitch = 0;
+        camera.position.set(-6, 2, 10);
+        yaw = Math.PI / 1.9;
+        pitch = -0.4;
     } else if (i == 3) {
-        camera.position.set(0, 100, 500);
-        yaw = Math.PI / 5;
-        pitch = 0;
+        camera.position.set(6, 2, 10);
+        yaw = Math.PI / -2;
+        pitch = -0.3;
     } else if (i == 4) {
-        camera.position.set(0, 1000, 0);
+        camera.position.set(0, 30, 0);
         yaw = 0;
         pitch = -1.5;
     }
